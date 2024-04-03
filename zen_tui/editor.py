@@ -1,17 +1,19 @@
+"""Editor Widget."""
+
+from __future__ import annotations
 #
 # Simple VT100 terminal text editor widget
 # Copyright (c) 2015-2020 Paul Sokolovsky
 # Distributed under MIT License
 #
 import sys
-import os
 
 from .basewidget import Widget
-from .defs import *
+from .defs import Keys
 
 
 class Editor(Widget):
-
+    """Editor Widget class."""
     def __init__(self, x=0, y=0, width=80, height=24):
         Widget.__init__(self)
         self.top_line = 0
@@ -23,10 +25,12 @@ class Editor(Widget):
         self.height = height
         self.width = width
         self.margin = 0
+        self.content: list[str] = []
+        self.total_lines = 0
 
     def set_cursor(self):
         self.goto(self.col + self.x, self.row + self.y)
-        self.cursor(True)
+        self.cursor(onoff=True)
 
     def adjust_cursor_eol(self):
         # Returns True if entire window needs redraw
@@ -49,12 +53,12 @@ class Editor(Widget):
         self.content = lines
         self.total_lines = len(lines)
 
-    def redraw(self):
-        self.cursor(False)
+    def redraw(self) -> None:
+        self.cursor(onoff=False)
         i = self.top_line
         for c in range(self.height):
             self.goto(self.x, self.y + c)
-            if i == self.total_lines:
+            if i >= self.total_lines:
                 self.show_line("", -1)
             else:
                 self.show_line(self.content[i], i)
@@ -62,31 +66,29 @@ class Editor(Widget):
         self.set_cursor()
 
     def update_line(self):
-        self.cursor(False)
+        self.cursor(onoff=False)
         self.goto(self.x, self.row + self.y)
         self.show_line(self.content[self.cur_line], self.cur_line)
         self.set_cursor()
 
-    def show_line(self, l, i):
-        l = l[self.margin:]
-        l = l[:self.width]
-        self.wr(l)
-        self.clear_num_pos(self.width - len(l))
+    def show_line(self, line: str, _i: int):
+        line = line[self.margin:]
+        line = line[:self.width]
+        self.wr(line)
+        self.clear_num_pos(self.width - len(line))
 
     def next_line(self):
         if self.row + 1 == self.height:
             self.top_line += 1
             return True
-            self.redraw()
         else:
             self.row += 1
             return False
-            self.set_cursor()
 
-    def handle_cursor_keys(self, key):
+    def handle_cursor_keys(self, key) -> bool:
         if not self.total_lines:
-            return
-        if key == KEY_DOWN:
+            return False
+        if key == Keys.KEY_DOWN:
             if self.cur_line + 1 != self.total_lines:
                 self.cur_line += 1
                 redraw = self.adjust_cursor_eol()
@@ -94,7 +96,7 @@ class Editor(Widget):
                     self.redraw()
                 else:
                     self.set_cursor()
-        elif key == KEY_UP:
+        elif key == Keys.KEY_UP:
             if self.cur_line > 0:
                 self.cur_line -= 1
                 redraw = self.adjust_cursor_eol()
@@ -108,33 +110,33 @@ class Editor(Widget):
                         self.redraw()
                     else:
                         self.set_cursor()
-        elif key == KEY_LEFT:
+        elif key == Keys.KEY_LEFT:
             if self.col > 0:
                 self.col -= 1
                 self.set_cursor()
             elif self.margin > 0:
                 self.margin -= 1
                 self.redraw()
-        elif key == KEY_RIGHT:
+        elif key == Keys.KEY_RIGHT:
             self.col += 1
             if self.adjust_cursor_eol():
                 self.redraw()
             else:
                 self.set_cursor()
-        elif key == KEY_HOME:
+        elif key == Keys.KEY_HOME:
             self.col = 0
             if self.margin > 0:
                 self.margin = 0
                 self.redraw()
             else:
                 self.set_cursor()
-        elif key == KEY_END:
+        elif key == Keys.KEY_END:
             self.col = len(self.content[self.cur_line])
             if self.adjust_cursor_eol():
                 self.redraw()
             else:
                 self.set_cursor()
-        elif key == KEY_PGUP:
+        elif key == Keys.KEY_PGUP:
             self.cur_line -= self.height
             self.top_line -= self.height
             if self.top_line < 0:
@@ -146,7 +148,7 @@ class Editor(Widget):
                 self.row = 0
             self.adjust_cursor_eol()
             self.redraw()
-        elif key == KEY_PGDN:
+        elif key == Keys.KEY_PGDN:
             self.cur_line += self.height
             self.top_line += self.height
             if self.cur_line >= self.total_lines:
@@ -163,7 +165,7 @@ class Editor(Widget):
             return False
         return True
 
-    def handle_mouse(self, col, row):
+    def handle_mouse(self, col: int, row: int) -> bool:
         row -= self.y
         col -= self.x
         if 0 <= row < self.height and 0 <= col < self.width:
@@ -175,44 +177,46 @@ class Editor(Widget):
                 self.adjust_cursor_eol()
                 self.set_cursor()
                 return True
+        return False
 
-    def handle_key(self, key):
-        if key == KEY_QUIT:
+    def handle_key(self, key) -> bool | int | None:
+        if key == Keys.KEY_QUIT:
             return key
         if self.handle_cursor_keys(key):
-            return
+            return None
         return self.handle_edit_key(key)
 
-    def handle_edit_key(self, key):
-        l = self.content[self.cur_line]
-        if key == KEY_ENTER:
-            self.content[self.cur_line] = l[:self.col + self.margin]
+    def handle_edit_key(self, key) -> bool | None:
+        line = self.content[self.cur_line]
+        if key == Keys.KEY_ENTER:
+            self.content[self.cur_line] = line[:self.col + self.margin]
             self.cur_line += 1
-            self.content[self.cur_line:self.cur_line] = [l[self.col + self.margin:]]
+            self.content[self.cur_line:self.cur_line] = [line[self.col + self.margin:]]
             self.total_lines += 1
             self.col = 0
             self.margin = 0
             self.next_line()
             self.redraw()
-        elif key == KEY_BACKSPACE:
+        elif key == Keys.KEY_BACKSPACE:
             if self.col + self.margin:
                 if self.col:
                     self.col -= 1
                 else:
                     self.margin -= 1
-                l = l[:self.col + self.margin] + l[self.col + self.margin + 1:]
-                self.content[self.cur_line] = l
+                line = line[:self.col + self.margin] + line[self.col + self.margin + 1:]
+                self.content[self.cur_line] = line
                 self.update_line()
-        elif key == KEY_DELETE:
-            l = l[:self.col + self.margin] + l[self.col + self.margin + 1:]
-            self.content[self.cur_line] = l
+        elif key == Keys.KEY_DELETE:
+            line = line[:self.col + self.margin] + line[self.col + self.margin + 1:]
+            self.content[self.cur_line] = line
             self.update_line()
         else:
-            l = l[:self.col + self.margin] + str(key, "utf-8") + l[self.col + self.margin:]
-            self.content[self.cur_line] = l
+            line = line[:self.col + self.margin] + str(key, "utf-8") + line[self.col + self.margin:]
+            self.content[self.cur_line] = line
             self.col += 1
             self.adjust_cursor_eol()
             self.update_line()
+        return None
 
     def deinit_tty(self):
         # Don't leave cursor in the middle of screen
@@ -221,7 +225,7 @@ class Editor(Widget):
 
 
 if __name__ == "__main__":
-    with open(sys.argv[1]) as f:
+    with open(sys.argv[1], encoding="utf-8") as f:
         content = f.read().splitlines()
         #content = f.readlines()
 

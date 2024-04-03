@@ -1,6 +1,11 @@
-from zen_tui.widgets import *
-from zen_tui.menu import *
+"""Example Screen Resize program."""
+
+from zen_tui.basewidget import ACTION_OK, ACTION_CANCEL
+from zen_tui.widgets import Dialog, WButton, WDropDown, WLabel, WListBox
+# from zen_tui.menu import WMenuBar, WMenuBox
+from zen_tui.screen import Screen
 from zen_tui.context import Context
+from zen_tui.defs import Color
 
 
 # Dialog on the screen
@@ -17,20 +22,21 @@ def screen_resize(s):
 
 
 # This routine is called to redraw screen
-def screen_redraw(s, allow_cursor=False):
+def screen_redraw(s, _allow_cursor=False):
     global d
-    s.attr_color(C_WHITE, C_BLUE)
+    s.attr_color(Color.C_WHITE, Color.C_BLUE)
     s.cls()
     s.attr_reset()
     d.redraw()
 
 
 def create_dialog():
+    global d
     width, height = Screen.screen_size()
 
     d = Dialog((width - 40) // 2, (height - 13) // 2, 40, 13)
     d.add(1, 1, WLabel("Label:"))
-    d.add(1, 2, WListBox(16, 4, ["choice%d" % i for i in range(10)]))
+    d.add(1, 2, WListBox(16, 4, [f"choice{i}" for i in range(10)]))
     d.add(1, 7, WDropDown(10, ["Red", "Green", "Yellow"]))
 
     b = WButton(8, "OK")

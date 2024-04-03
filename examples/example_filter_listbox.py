@@ -1,10 +1,9 @@
-#
-# This example shows how to change the items of a ListBox widget
-# when the current selection of a DropDown widget changes.
-#
+"""This example shows how to change the items of a ListBox widget when the current selection of a DropDown widget changes."""
+
+from zen_tui.basewidget import ACTION_OK, ACTION_CANCEL
 from zen_tui.screen import Screen
-from zen_tui.widgets import *
-from zen_tui.defs import *
+from zen_tui.widgets import Dialog, WDropDown, WListBox, WButton
+from zen_tui.defs import Color
 
 
 if __name__ == "__main__":
@@ -17,7 +16,7 @@ if __name__ == "__main__":
     try:
         s.init_tty()
         s.enable_mouse()
-        s.attr_color(C_WHITE, C_BLUE)
+        s.attr_color(Color.C_WHITE, Color.C_BLUE)
         s.cls()
         s.attr_reset()
         d = Dialog(5, 5, 20, 12)

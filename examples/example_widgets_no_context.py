@@ -6,8 +6,8 @@ Context whenever possible.
 """
 
 from zen_tui.screen import Screen
-from zen_tui.widgets import *
-from zen_tui.defs import *
+from zen_tui.widgets import ACTION_OK, ACTION_CANCEL, Dialog, WCheckbox, WFrame, WLabel, WButton, WListBox, WDropDown, WComboBox, WAutoComplete, WMultiEntry, WRadioButton, WTextEntry
+from zen_tui.defs import Color
 
 
 if __name__ == "__main__":
@@ -16,7 +16,7 @@ if __name__ == "__main__":
     try:
         s.init_tty()
         s.enable_mouse()
-        s.attr_color(C_WHITE, C_BLUE)
+        s.attr_color(Color.C_WHITE, Color.C_BLUE)
         s.cls()
         s.attr_reset()
         d = Dialog(5, 5, 50, 12)
@@ -45,7 +45,7 @@ if __name__ == "__main__":
         d.add(31, 3, WRadioButton(["Red", "Green", "Yellow"]))
 
         d.add(30, 8, "List:")
-        d.add(30, 9, WListBox(16, 4, ["choice%d" % i for i in range(10)]))
+        d.add(30, 9, WListBox(16, 4, [f"choice{i}" for i in range(10)]))
 
         d.add(1, 13, "Button:")
         b = WButton(9, "Kaboom!")

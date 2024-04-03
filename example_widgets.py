@@ -1,12 +1,14 @@
+"""Example Widgets program."""
+
 from zen_tui.context import Context
 from zen_tui.screen import Screen
-from zen_tui.widgets import *
-from zen_tui.defs import *
+from zen_tui.widgets import ACTION_OK, ACTION_CANCEL, Dialog, WAutoComplete, WButton, WCheckbox, WComboBox, WDropDown, WFrame, WLabel, WListBox, WMultiEntry, WPasswdEntry, WRadioButton, WTextEntry
+from zen_tui.defs import Color
 
 
 with Context():
 
-    Screen.attr_color(C_WHITE, C_BLUE)
+    Screen.attr_color(Color.C_WHITE, Color.C_BLUE)
     Screen.cls()
     Screen.attr_reset()
     d = Dialog(5, 5, 50, 12)
@@ -38,7 +40,7 @@ with Context():
     d.add(31, 3, WRadioButton(["Red", "Green", "Yellow"]))
 
     d.add(30, 8, "List:")
-    d.add(30, 9, WListBox(16, 4, ["choice%d" % i for i in range(10)]))
+    d.add(30, 9, WListBox(16, 4, [f"choice{i}" for i in range(10)]))
 
     d.add(1, 13, "Button:")
     b = WButton(9, "Kaboom!")

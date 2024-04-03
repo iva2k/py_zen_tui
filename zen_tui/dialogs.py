@@ -1,4 +1,6 @@
-from .widgets import *
+"""Dialogs module."""
+
+from .widgets import ACTION_OK, ACTION_CANCEL, Dialog, WButton, WLabel, WTextEntry, WMultiEntry
 
 
 def add_ok_cancel_buttons(d):
@@ -19,7 +21,7 @@ def add_ok_cancel_buttons(d):
 
 
 class DTextEntry(Dialog):
-
+    """DTextEntry Widget class"""
     def __init__(self, entry_w, text, title=""):
         super().__init__(10, 5, title=title)
         self.entry = WTextEntry(entry_w, text)
@@ -33,6 +35,7 @@ class DTextEntry(Dialog):
 
 
 class DMultiEntry(Dialog):
+    """DMultiEntry Widget class"""
 
     def __init__(self, entry_w, entry_h, lines, title=""):
         super().__init__(10, 5, entry_w + 2, entry_h + 3, title=title)
@@ -48,6 +51,7 @@ class DMultiEntry(Dialog):
 
 
 class DConfirmation(Dialog):
+    """DConfirmation Widget class"""
 
     def __init__(self, lines, title=""):
         super().__init__(10, 5, title=title)

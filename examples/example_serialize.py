@@ -1,17 +1,16 @@
-#
-# This example shows a way to "serialize" results of a preference-style
-# dialog.
-#
+"""This example shows a way to "serialize" results of a preference-style dialog."""
+
 from pprint import pprint
 
 from zen_tui.context import Context
 from zen_tui.screen import Screen
-from zen_tui.defs import *
-from zen_tui.widgets import *
+from zen_tui.basewidget import EditableWidget
+from zen_tui.widgets import ACTION_OK, ACTION_CANCEL, Dialog, WButton, WCheckbox, WComboBox, WFrame, WLabel, WListBox, WDropDown, WAutoComplete, WMultiEntry, WRadioButton, WTextEntry
+from zen_tui.defs import Color
 
 
 with Context():
-    Screen.attr_color(C_WHITE, C_BLUE)
+    Screen.attr_color(Color.C_WHITE, Color.C_BLUE)
     Screen.cls()
     Screen.attr_reset()
 
@@ -55,7 +54,7 @@ with Context():
     d.add(31, 3, w)
 
     d.add(30, 8, "List:")
-    w = WListBox(16, 4, ["choice%d" % i for i in range(10)])
+    w = WListBox(16, 4, [f"choice{i}" for i in range(10)])
     w.tag = "list"
     d.add(30, 9, w)
 

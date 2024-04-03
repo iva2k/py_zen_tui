@@ -1,10 +1,19 @@
-#
-# Very simple VT100 terminal text editor widget
-# Copyright (c) 2015 Paul Sokolovsky
-# Distributed under MIT License
-#
+"""Very simple VT100 terminal text editor widget.
+
+Copyright (c) 2015 Paul Sokolovsky
+Distributed under MIT License
+"""
+from __future__ import annotations
+
 import sys
 import os
+
+if os.name == "nt":
+    # import msvcrt
+    pass
+else:
+    import termios
+    import tty
 
 
 KEY_UP = 1
@@ -39,13 +48,17 @@ b"\x1b[3~": KEY_DELETE,
 
 
 class Editor:
+    """Editor class."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.top_line = 0
         self.cur_line = 0
         self.row = 0
         self.col = 0
         self.height = 25
+        self.content: list[str] = []
+        self.total_lines = 0
+        self.org_termios = None
 
     @staticmethod
     def wr(s):
@@ -61,7 +74,7 @@ class Editor:
     @staticmethod
     def goto(row, col):
         # TODO: When Python is 3.5, update this to use bytes
-        Editor.wr("\x1b[%d;%dH" % (row + 1, col + 1))
+        Editor.wr("\x1b[{row + 1};{col + 1}H")
 
     @staticmethod
     def clear_to_eol():
@@ -78,16 +91,16 @@ class Editor:
         self.goto(self.row, self.col)
 
     def adjust_cursor_eol(self):
-        l = len(self.content[self.cur_line])
-        if self.col > l:
-            self.col = l
+        line_len = len(self.content[self.cur_line])
+        if self.col > line_len:
+            self.col = line_len
 
     def set_lines(self, lines):
         self.content = lines
         self.total_lines = len(lines)
 
     def update_screen(self):
-        self.cursor(False)
+        self.cursor(onoff=False)
         self.goto(0, 0)
         self.cls()
         i = self.top_line
@@ -98,18 +111,18 @@ class Editor:
             if i == self.total_lines:
                 break
         self.set_cursor()
-        self.cursor(True)
+        self.cursor(onoff=True)
 
     def update_line(self):
-        self.cursor(False)
+        self.cursor(onoff=False)
         self.wr(b"\r")
         self.show_line(self.content[self.cur_line])
         self.clear_to_eol()
         self.set_cursor()
-        self.cursor(True)
+        self.cursor(onoff=True)
 
-    def show_line(self, l):
-        self.wr(l)
+    def show_line(self, line: str):
+        self.wr(line)
 
     def next_line(self):
         if self.row + 1 == self.height:
@@ -202,46 +215,51 @@ class Editor:
                     return key
                 if self.handle_cursor_keys(key):
                     continue
-                res = self.handle_key(key)
+                res = self.handle_key(key)  # pylint: disable=assignment-from-none
                 if res is not None:
                     return res
 
-    def handle_key(self, key):
-            l = self.content[self.cur_line]
-            if key == KEY_ENTER:
-                self.content[self.cur_line] = l[:self.col]
-                self.cur_line += 1
-                self.content[self.cur_line:self.cur_line] = [l[self.col:]]
-                self.total_lines += 1
-                self.col = 0
-                self.next_line()
-                self.update_screen()
-            elif key == KEY_BACKSPACE:
-                if self.col:
-                    self.col -= 1
-                    l = l[:self.col] + l[self.col + 1:]
-                    self.content[self.cur_line] = l
-                    self.update_line()
-            elif key == KEY_DELETE:
-                l = l[:self.col] + l[self.col + 1:]
-                self.content[self.cur_line] = l
+    def handle_key(self, key) -> bool | int | None:
+        line = self.content[self.cur_line]
+        if key == KEY_ENTER:
+            self.content[self.cur_line] = line[:self.col]
+            self.cur_line += 1
+            self.content[self.cur_line:self.cur_line] = [line[self.col:]]
+            self.total_lines += 1
+            self.col = 0
+            self.next_line()
+            self.update_screen()
+        elif key == KEY_BACKSPACE:
+            if self.col:
+                self.col -= 1
+                line = line[:self.col] + line[self.col + 1:]
+                self.content[self.cur_line] = line
                 self.update_line()
-            else:
-                l = l[:self.col] + str(key, "utf-8") + l[self.col:]
-                self.content[self.cur_line] = l
-                self.col += 1
-                self.update_line()
+        elif key == KEY_DELETE:
+            line = line[:self.col] + line[self.col + 1:]
+            self.content[self.cur_line] = line
+            self.update_line()
+        else:
+            line = line[:self.col] + str(key, "utf-8") + line[self.col:]
+            self.content[self.cur_line] = line
+            self.col += 1
+            self.update_line()
+        return None
 
     def init_tty(self):
-        import tty, termios
-        self.org_termios = termios.tcgetattr(0)
-        tty.setraw(0)
+        if os.name == "nt":
+            pass
+        else:
+            self.org_termios = termios.tcgetattr(0)
+            tty.setraw(0)
 
     def deinit_tty(self):
         # Don't leave cursor in the middle of screen
         self.goto(self.height, 0)
-        import termios
-        termios.tcsetattr(0, termios.TCSANOW, self.org_termios)
+        if os.name == "nt":
+            pass
+        elif self.org_termios:
+            termios.tcsetattr(0, termios.TCSANOW, self.org_termios)
 
 
 if __name__ == "__main__":

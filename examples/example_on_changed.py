@@ -5,12 +5,12 @@
 #
 from zen_tui.context import Context
 from zen_tui.screen import Screen
-from zen_tui.widgets import *
-from zen_tui.defs import *
+from zen_tui.widgets import ACTION_OK, ACTION_CANCEL, Dialog, WButton, WCheckbox, WDropDown, WLabel, WListBox, WRadioButton
+from zen_tui.defs import Color
 
 
 with Context():
-    Screen.attr_color(C_WHITE, C_BLUE)
+    Screen.attr_color(Color.C_WHITE, Color.C_BLUE)
     Screen.cls()
     Screen.attr_reset()
 

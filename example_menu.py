@@ -1,14 +1,19 @@
-from zen_tui.widgets import *
-from zen_tui.menu import *
+"""Example Menu program."""
+
+from zen_tui.menu import WMenuBar, WMenuBox
+from zen_tui.widgets import ACTION_OK, ACTION_CANCEL, Dialog, WLabel, WButton, WListBox, WDropDown
+from zen_tui.screen import Screen
 from zen_tui.context import Context
+from zen_tui.defs import Color, Keys
 
 
 # Dialog on the screen
 d = None
 
 # This routine is called to redraw screen "in menu's background"
-def screen_redraw(s, allow_cursor=False):
-    s.attr_color(C_WHITE, C_BLUE)
+def screen_redraw(s, _allow_cursor=False):
+    """Redraw screen in menu's background."""
+    s.attr_color(Color.C_WHITE, Color.C_BLUE)
     s.cls()
     s.attr_reset()
     d.redraw()
@@ -18,7 +23,8 @@ def screen_redraw(s, allow_cursor=False):
 # so can't call their individual loops, and instead should have
 # "main loop" to route events to currently active widget, and
 # switch the active one based on special events.
-def main_loop():
+def main_loop(m):
+    """Main Loop."""
     while 1:
         key = m.get_input()
 
@@ -39,7 +45,7 @@ def main_loop():
                 return res
         else:
             # If menu isn't focused, it can be focused by pressing F9.
-            if key == KEY_F9:
+            if key == Keys.KEY_F9:
                 m.focus = True
                 m.redraw()
                 continue
@@ -48,33 +54,35 @@ def main_loop():
             if res is not None and res is not True:
                 return res
 
+def main():
+    with Context():
+        global d
+        d = Dialog(10, 5, 40, 14)
+        d.add(12, 1, WLabel("Press F9 for menu"))
+        d.add(1, 2, WLabel("Label:"))
+        d.add(1, 3, WListBox(16, 4, [f"choice{i}" for i in range(10)]))
+        d.add(1, 8, WDropDown(10, ["Red", "Green", "Yellow"]))
 
-with Context():
+        b = WButton(8, "OK")
+        d.add(10, 11, b)
+        b.finish_dialog = ACTION_OK
 
-    d = Dialog(10, 5, 40, 14)
-    d.add(12, 1, WLabel("Press F9 for menu"))
-    d.add(1, 2, WLabel("Label:"))
-    d.add(1, 3, WListBox(16, 4, ["choice%d" % i for i in range(10)]))
-    d.add(1, 8, WDropDown(10, ["Red", "Green", "Yellow"]))
+        b = WButton(8, "Cancel")
+        d.add(23, 11, b)
+        b.finish_dialog = ACTION_CANCEL
 
-    b = WButton(8, "OK")
-    d.add(10, 11, b)
-    b.finish_dialog = ACTION_OK
+        screen_redraw(Screen)
+        Screen.set_screen_redraw(screen_redraw)
 
-    b = WButton(8, "Cancel")
-    d.add(23, 11, b)
-    b.finish_dialog = ACTION_CANCEL
+        menu_file = WMenuBox([("Open...", "Open"), ("Save", "S"), ("Save as...", "Sa"), ("Exit", "ex")])
+        menu_edit = WMenuBox([("Copy", "copy"), ("Paste", "paste")])
+        m = WMenuBar([("File", menu_file), ("Edit", menu_edit), ("About", "About")])
+        m.permanent = True
+        m.redraw()
 
-    screen_redraw(Screen)
-    Screen.set_screen_redraw(screen_redraw)
-
-    menu_file = WMenuBox([("Open...", "Open"), ("Save", "S"), ("Save as...", "Sa"), ("Exit", "ex")])
-    menu_edit = WMenuBox([("Copy", "copy"), ("Paste", "paste")])
-    m = WMenuBar([("File", menu_file), ("Edit", menu_edit), ("About", "About")])
-    m.permanent = True
-    m.redraw()
-
-    res = main_loop()
+        res = main_loop(m)
 
 
-print("Result:", res)
+    print("Result:", res)
+
+main()

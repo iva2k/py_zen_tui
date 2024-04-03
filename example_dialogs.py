@@ -1,5 +1,6 @@
+"""Example of using zen_tui.dialogs."""
 from zen_tui.context import Context
-from zen_tui.dialogs import *
+from zen_tui.dialogs import DTextEntry, DMultiEntry
 
 
 with Context():

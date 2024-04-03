@@ -1,7 +1,10 @@
+"""Context Manager."""
+
 from .screen import Screen
 
 
 class Context:
+    """Context Manager class."""
 
     def __init__(self, cls=True, mouse=True):
         self.cls = cls
@@ -19,7 +22,7 @@ class Context:
         if self.mouse:
             Screen.disable_mouse()
         Screen.goto(0, 50)
-        Screen.cursor(True)
+        Screen.cursor(onoff=True)
         Screen.deinit_tty()
         # This makes sure that entire screenful is scrolled up, and
         # any further output happens on a normal terminal line.

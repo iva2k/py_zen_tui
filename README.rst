@@ -37,3 +37,8 @@ distributions, e.g. Ubuntu, are known to have a broken Unicode font
 installed by default, which causes various visual artifacts (specifically,
 Ubuntu Mono font isn't really monospace - many Unicode pseudographic
 characters have double (or so) width, box-drawing symbols have gaps, etc.)
+
+Compare
+-------
+
+* https://github.com/shade40/Slate

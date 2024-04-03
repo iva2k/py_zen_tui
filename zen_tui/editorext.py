@@ -1,15 +1,22 @@
-#
-# Extended VT100 terminal text editor, etc. widgets
-# Copyright (c) 2015 Paul Sokolovsky
-# Distributed under MIT License
-#
+"""Extended VT100 terminal text editor, etc. widgets.
+
+Copyright (c) 2015 Paul Sokolovsky
+Distributed under MIT License
+"""
+
+from __future__ import annotations
+
 import sys
-import os
-from .editor import *
+from typing import Iterable
+# import os
+
+from .editor import Editor
+from .defs import Keys
 
 
 # Edit single line, quit on Enter/Esc
 class LineEditor(Editor):
+    """LineEditor Widget class."""
 
     def handle_cursor_keys(self, key):
         if super().handle_cursor_keys(key):
@@ -17,8 +24,8 @@ class LineEditor(Editor):
             return True
         return False
 
-    def handle_key(self, key):
-        if key in (KEY_ENTER, KEY_ESC):
+    def handle_key(self, key) -> bool | int | None:
+        if key in (Keys.KEY_ENTER, Keys.KEY_ESC):
             return key
         if self.just_started:
             # Overwrite initial string with new content
@@ -34,25 +41,30 @@ class LineEditor(Editor):
         self.adjust_cursor_eol()
         self.just_started = True
         key = self.loop()
-        if key == KEY_ENTER:
+        if key == Keys.KEY_ENTER:
             return self.content[0]
         return None
 
 
 class Viewer(Editor):
+    """Viewer Widget class."""
 
-    def handle_key(self, key):
-        if key in (KEY_ENTER, KEY_ESC):
+    def handle_key(self, key) -> bool | int | None:
+        if key in (Keys.KEY_ENTER, Keys.KEY_ESC):
             return key
         if super().handle_cursor_keys(key):
             return True
+        return None
 
 
 # Viewer with colored lines, (whole line same color)
 class LineColorViewer(Viewer):
+    """LineColorViewer Widget class."""
+    def_c: int = 0
+    lines_c: dict|list[int] = []
 
-    def show_line(self, l, i):
-        if self.is_dict_color:
+    def show_line(self, line: str, i: int):
+        if isinstance(self.lines_c, dict):
             c = self.lines_c.get(i, self.def_c)
         else:
             try:
@@ -60,23 +72,28 @@ class LineColorViewer(Viewer):
             except IndexError:
                 c = self.def_c
         self.attr_color(c)
-        super().show_line(l, i)
+        super().show_line(line, i)
         self.attr_reset()
 
-    def set_line_colors(self, default_color, color_list={}):
+    def set_line_colors(self, default_color, color_list:list|dict|None=None):
+        if color_list is None:
+            color_list = {}
         self.def_c = default_color
         self.lines_c = color_list
-        self.is_dict_color = isinstance(color_list, dict)
 
 
-# Viewer with color support, (echo line may consist of spans
-# of different colors)
 class CharColorViewer(Viewer):
+    """CharColorViewer Widget class.
+    
+    Viewer with color support, (echo line may consist of spans of different colors)
+    """
 
-    def show_line(self, l, i):
+    def_c: int = 0
+
+    def show_line(self, line: Iterable[tuple[bytes|str, int] | str], _i: int):
         # TODO: handle self.margin, self.width
         length = 0
-        for span in l:
+        for span in line:
             if isinstance(span, tuple):
                 span, c = span
             else:
@@ -93,6 +110,7 @@ class CharColorViewer(Viewer):
 
 
 class EditorExt(Editor):
+    """EditorExt Widget class."""
 
     screen_width = 80
 
@@ -141,19 +159,19 @@ class EditorExt(Editor):
         return True
 
     def show_status(self, msg):
-        self.cursor(False)
+        self.cursor(onoff=False)
         self.goto(0, self.status_y)
         self.wr(msg)
         self.clear_to_eol()
         self.set_cursor()
-        self.cursor(True)
+        self.cursor(onoff=True)
 
     def show_cursor_status(self):
-        self.cursor(False)
+        self.cursor(onoff=False)
         self.goto(0, 31)
-        self.wr("% 3d:% 3d" % (self.cur_line, self.col + self.margin))
+        self.wr("{self.cur_line: 3d}:{self.col + self.margin: 3d}")
         self.set_cursor()
-        self.cursor(True)
+        self.cursor(onoff=True)
 
     def dialog_edit_line(self, left=None, top=8, width=40, height=3, line="", title=""):
         if left is None:
@@ -163,20 +181,19 @@ class EditorExt(Editor):
         return e.edit(line)
 
 
-if __name__ == "__main__":
-
-    with open(sys.argv[1]) as f:
+def main():
+    with open(sys.argv[1], encoding="utf-8") as f:
         content = f.read().splitlines()
         #content = f.readlines()
 
 
-#os.write(1, b"\x1b[18t")
-#key = os.read(0, 32)
-#print(repr(key))
+    #os.write(1, b"\x1b[18t")
+    #key = os.read(0, 32)
+    #print(repr(key))
 
-#key = os.read(0, 32)
-#print(repr(key))
-#1/0
+    #key = os.read(0, 32)
+    #print(repr(key))
+    #1/0
 
     e = EditorExt(left=1, top=1, width=60, height=25)
     e.init_tty()
@@ -190,8 +207,11 @@ if __name__ == "__main__":
 
     1/0
 
-#    e.cls()
+    # e.cls()
     e.draw_box(0, 0, 62, 27)
     e.set_lines(content)
     e.loop()
     e.deinit_tty()
+
+if __name__ == "__main__":
+    main()
