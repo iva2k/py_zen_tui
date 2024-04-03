@@ -1,6 +1,6 @@
-from picotui.widgets import *
-from picotui.menu import *
-from picotui.context import Context
+from zen_tui.widgets import *
+from zen_tui.menu import *
+from zen_tui.context import Context
 
 
 # Dialog on the screen

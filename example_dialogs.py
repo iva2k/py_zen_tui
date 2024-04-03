@@ -1,5 +1,5 @@
-from picotui.context import Context
-from picotui.dialogs import *
+from zen_tui.context import Context
+from zen_tui.dialogs import *
 
 
 with Context():

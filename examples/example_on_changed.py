@@ -3,10 +3,10 @@
 # current state of widgets to other parts of an app (to other widgets
 # in this case).
 #
-from picotui.context import Context
-from picotui.screen import Screen
-from picotui.widgets import *
-from picotui.defs import *
+from zen_tui.context import Context
+from zen_tui.screen import Screen
+from zen_tui.widgets import *
+from zen_tui.defs import *
 
 
 with Context():

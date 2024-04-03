@@ -4,10 +4,10 @@
 #
 from pprint import pprint
 
-from picotui.context import Context
-from picotui.screen import Screen
-from picotui.defs import *
-from picotui.widgets import *
+from zen_tui.context import Context
+from zen_tui.screen import Screen
+from zen_tui.defs import *
+from zen_tui.widgets import *
 
 
 with Context():

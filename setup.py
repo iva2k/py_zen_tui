@@ -7,12 +7,12 @@ if sys.version_info < (3, 0):
     sys.exit(1)
 
 
-setup(name='picotui',
+setup(name='zen_tui',
       version='1.2.1',
       description="""A simple text user interface (TUI) library.""",
       long_description=open('README.rst').read(),
-      url='https://github.com/pfalcon/picotui',
-      author='Paul Sokolovsky',
-      author_email='pfalcon@users.sourceforge.net',
+      url='https://github.com/iva2k/py_zen_tui',
+      author='iva2k',
+      author_email='iva2k@yahoo.com',
       license='MIT',
-      packages=['picotui'])
+      packages=['zen_tui'])

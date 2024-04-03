@@ -1,7 +1,7 @@
 import unittest
-from picotui.widgets import WListBox
-from picotui.defs import KEY_DOWN
-from picotui.context import Context
+from zen_tui.widgets import WListBox
+from zen_tui.defs import KEY_DOWN
+from zen_tui.context import Context
 
 
 class User:

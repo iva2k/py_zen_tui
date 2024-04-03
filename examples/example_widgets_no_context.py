@@ -1,12 +1,13 @@
-#
-# This example is a variant of top-level example_widgets.py which
-# doesn't use picotui.context.Context, but initializes and
-# deinitializes screen "manually". Here only for completeness, use
-# Context whenever possible.
-#
-from picotui.screen import Screen
-from picotui.widgets import *
-from picotui.defs import *
+"""This example is a variant of top-level example_widgets.py.
+
+In contrast to example_widgets.py, this example doesn't use zen_tui.context.Context,
+but initializes and deinitializes screen "manually". Here only for completeness, use
+Context whenever possible.
+"""
+
+from zen_tui.screen import Screen
+from zen_tui.widgets import *
+from zen_tui.defs import *
 
 
 if __name__ == "__main__":

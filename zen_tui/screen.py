@@ -1,6 +1,14 @@
 import os
 import signal
 
+if os.name == "nt":
+    import msvcrt
+else:
+    import select
+    # pip install termios
+    import tty, termios
+
+
 
 class Screen:
 
@@ -118,33 +126,51 @@ class Screen:
 
     @classmethod
     def init_tty(cls):
-        import tty, termios
-        cls.org_termios = termios.tcgetattr(0)
-        tty.setraw(0)
+        if os.name == "nt":
+            pass
+        else:
+            # import tty, termios
+            cls.org_termios = termios.tcgetattr(0)
+            tty.setraw(0)
 
     @classmethod
     def deinit_tty(cls):
-        import termios
-        termios.tcsetattr(0, termios.TCSANOW, cls.org_termios)
+        if os.name == "nt":
+            pass
+        else:
+            # import termios
+            termios.tcsetattr(0, termios.TCSANOW, cls.org_termios)
 
     @classmethod
     def enable_mouse(cls):
         # Mouse reporting - X10 compatibility mode
-        cls.wr(b"\x1b[?1000h")
+        # https://invisible-island.net/xterm/ctlseqs/ctlseqs.html#h2-Mouse-Tracking
+        cls.wr(b"\x1b[?1000h")  # SET_VT200_MOUSE
+        # For "X10 compatibility mode" should be SET_X10_MOUSE 9:
+        # cls.wr(b"\x1b[?9h")  # SET_X10_MOUSE
+        #? "\x1b[?1003h\x1b[?1015h\x1b[?1006h"
 
     @classmethod
     def disable_mouse(cls):
         # Mouse reporting - X10 compatibility mode
         cls.wr(b"\x1b[?1000l")
+        #? "\x1b[?1003l\x1b[?1015l\x1b[?1006l"
+        # cls.wr(b"\x1b[?9l")  # SET_X10_MOUSE - CLR
 
     @classmethod
     def screen_size(cls):
-        import select
         cls.wr(b"\x1b[18t")
-        res = select.select([0], [], [], 0.2)[0]
+        if os.name == "nt":
+            res = True
+        else:
+            # import select
+            res = select.select([0], [], [], 0.2)[0]
         if not res:
             return (80, 24)
-        resp = os.read(0, 32)
+        if os.name == "nt":
+            resp = msvcrt.getch()
+        else:
+            resp = os.read(0, 32)
         assert resp.startswith(b"\x1b[8;") and resp[-1:] == b"t"
         vals = resp[:-1].split(b";")
         return (int(vals[2]), int(vals[1]))

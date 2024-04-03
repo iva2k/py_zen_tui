@@ -1,5 +1,8 @@
 import os
 
+if os.name == "nt":
+    import msvcrt
+
 from .screen import Screen
 from .defs import KEYMAP as _KEYMAP
 
@@ -45,7 +48,10 @@ class Widget(Screen):
             key = self.kbuf[0:1]
             self.kbuf = self.kbuf[1:]
         else:
-            key = os.read(0, 32)
+            if os.name == "nt":
+                key = msvcrt.getch()
+            else:
+                key = os.read(0, 32)
             if key[0] != 0x1b:
                 key = key.decode()
                 self.kbuf = key[1:].encode()

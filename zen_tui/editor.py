@@ -52,15 +52,13 @@ class Editor(Widget):
     def redraw(self):
         self.cursor(False)
         i = self.top_line
-        r = self.y
         for c in range(self.height):
-            self.goto(self.x, r)
+            self.goto(self.x, self.y + c)
             if i == self.total_lines:
                 self.show_line("", -1)
             else:
                 self.show_line(self.content[i], i)
                 i += 1
-            r += 1
         self.set_cursor()
 
     def update_line(self):
@@ -186,35 +184,35 @@ class Editor(Widget):
         return self.handle_edit_key(key)
 
     def handle_edit_key(self, key):
-            l = self.content[self.cur_line]
-            if key == KEY_ENTER:
-                self.content[self.cur_line] = l[:self.col + self.margin]
-                self.cur_line += 1
-                self.content[self.cur_line:self.cur_line] = [l[self.col + self.margin:]]
-                self.total_lines += 1
-                self.col = 0
-                self.margin = 0
-                self.next_line()
-                self.redraw()
-            elif key == KEY_BACKSPACE:
-                if self.col + self.margin:
-                    if self.col:
-                        self.col -= 1
-                    else:
-                        self.margin -= 1
-                    l = l[:self.col + self.margin] + l[self.col + self.margin + 1:]
-                    self.content[self.cur_line] = l
-                    self.update_line()
-            elif key == KEY_DELETE:
+        l = self.content[self.cur_line]
+        if key == KEY_ENTER:
+            self.content[self.cur_line] = l[:self.col + self.margin]
+            self.cur_line += 1
+            self.content[self.cur_line:self.cur_line] = [l[self.col + self.margin:]]
+            self.total_lines += 1
+            self.col = 0
+            self.margin = 0
+            self.next_line()
+            self.redraw()
+        elif key == KEY_BACKSPACE:
+            if self.col + self.margin:
+                if self.col:
+                    self.col -= 1
+                else:
+                    self.margin -= 1
                 l = l[:self.col + self.margin] + l[self.col + self.margin + 1:]
                 self.content[self.cur_line] = l
                 self.update_line()
-            else:
-                l = l[:self.col + self.margin] + str(key, "utf-8") + l[self.col + self.margin:]
-                self.content[self.cur_line] = l
-                self.col += 1
-                self.adjust_cursor_eol()
-                self.update_line()
+        elif key == KEY_DELETE:
+            l = l[:self.col + self.margin] + l[self.col + self.margin + 1:]
+            self.content[self.cur_line] = l
+            self.update_line()
+        else:
+            l = l[:self.col + self.margin] + str(key, "utf-8") + l[self.col + self.margin:]
+            self.content[self.cur_line] = l
+            self.col += 1
+            self.adjust_cursor_eol()
+            self.update_line()
 
     def deinit_tty(self):
         # Don't leave cursor in the middle of screen
