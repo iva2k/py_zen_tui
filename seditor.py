@@ -81,8 +81,8 @@ class Editor:
         Editor.wr(b"\x1b[0K")
 
     @staticmethod
-    def cursor(onoff):
-        if onoff:
+    def cursor(on):
+        if on:
             Editor.wr(b"\x1b[?25h")
         else:
             Editor.wr(b"\x1b[?25l")
@@ -95,12 +95,12 @@ class Editor:
         if self.col > line_len:
             self.col = line_len
 
-    def set_lines(self, lines):
+    def set_lines(self, lines: list[str]):
         self.content = lines
         self.total_lines = len(lines)
 
     def update_screen(self):
-        self.cursor(onoff=False)
+        self.cursor(on=False)
         self.goto(0, 0)
         self.cls()
         i = self.top_line
@@ -111,15 +111,15 @@ class Editor:
             if i == self.total_lines:
                 break
         self.set_cursor()
-        self.cursor(onoff=True)
+        self.cursor(on=True)
 
     def update_line(self):
-        self.cursor(onoff=False)
+        self.cursor(on=False)
         self.wr(b"\r")
         self.show_line(self.content[self.cur_line])
         self.clear_to_eol()
         self.set_cursor()
-        self.cursor(onoff=True)
+        self.cursor(on=True)
 
     def show_line(self, line: str):
         self.wr(line)

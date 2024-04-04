@@ -5,6 +5,10 @@ but initializes and deinitializes screen "manually". Here only for completeness,
 Context whenever possible.
 """
 
+import os
+import sys
+sys.path.append(os.path.realpath(os.path.join(os.path.dirname(__file__), "..")))
+
 from zen_tui.screen import Screen
 from zen_tui.widgets import ACTION_OK, ACTION_CANCEL, Dialog, WCheckbox, WFrame, WLabel, WButton, WListBox, WDropDown, WComboBox, WAutoComplete, WMultiEntry, WRadioButton, WTextEntry
 from zen_tui.defs import Color
@@ -67,7 +71,7 @@ if __name__ == "__main__":
         res = d.loop()
     finally:
         s.goto(0, 50)
-        s.cursor(True)
+        s.cursor(on=True)
         s.disable_mouse()
         s.deinit_tty()
 

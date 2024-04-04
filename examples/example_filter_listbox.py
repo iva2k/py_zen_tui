@@ -1,5 +1,9 @@
 """This example shows how to change the items of a ListBox widget when the current selection of a DropDown widget changes."""
 
+import os
+import sys
+sys.path.append(os.path.realpath(os.path.join(os.path.dirname(__file__), "..")))
+
 from zen_tui.basewidget import ACTION_OK, ACTION_CANCEL
 from zen_tui.screen import Screen
 from zen_tui.widgets import Dialog, WDropDown, WListBox, WButton
@@ -55,7 +59,7 @@ if __name__ == "__main__":
         res = d.loop()
     finally:
         s.goto(0, 50)
-        s.cursor(True)
+        s.cursor(on=True)
         s.disable_mouse()
         s.deinit_tty()
 

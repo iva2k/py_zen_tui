@@ -23,6 +23,7 @@ class Widget(Screen):
     popup_class = None
 
     def __init__(self):
+        super().__init__()
         self.multikeys: list[bytes] = [k for k in Keys.KEYMAP if isinstance(k, bytes) and len(k) > 1]
 
         self.signals = {}
@@ -92,7 +93,7 @@ class Widget(Screen):
 
     def set_cursor(self):
         # By default, a widget doesn't use text cursor, so disables it
-        self.cursor(onoff=False)
+        self.cursor(on=False)
 
     def redraw(self) -> None:
         # raise NotImplementedError("Implement redraw()")

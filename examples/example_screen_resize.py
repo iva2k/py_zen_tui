@@ -1,9 +1,12 @@
-"""Example Screen Resize program."""
+"""Example ctx.screen Resize program."""
+
+import os
+import sys
+sys.path.append(os.path.realpath(os.path.join(os.path.dirname(__file__), "..")))
 
 from zen_tui.basewidget import ACTION_OK, ACTION_CANCEL
 from zen_tui.widgets import Dialog, WButton, WDropDown, WLabel, WListBox
 # from zen_tui.menu import WMenuBar, WMenuBox
-from zen_tui.screen import Screen
 from zen_tui.context import Context
 from zen_tui.defs import Color
 
@@ -32,7 +35,7 @@ def screen_redraw(s, _allow_cursor=False):
 
 def create_dialog():
     global d
-    width, height = Screen.screen_size()
+    width, height = ctx.screen.screen_size()
 
     d = Dialog((width - 40) // 2, (height - 13) // 2, 40, 13)
     d.add(1, 1, WLabel("Label:"))
@@ -50,12 +53,12 @@ def create_dialog():
     return d
 
 
-with Context():
+with Context() as ctx:
     d = create_dialog()
 
-    screen_redraw(Screen)
-    Screen.set_screen_redraw(screen_redraw)
-    Screen.set_screen_resize(screen_resize)
+    screen_redraw(ctx.screen)
+    ctx.screen.set_screen_redraw(screen_redraw)
+    ctx.screen.set_screen_resize(screen_resize)
 
     res = d.loop()
 

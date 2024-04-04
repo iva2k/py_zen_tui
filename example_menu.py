@@ -2,7 +2,6 @@
 
 from zen_tui.menu import WMenuBar, WMenuBox
 from zen_tui.widgets import ACTION_OK, ACTION_CANCEL, Dialog, WLabel, WButton, WListBox, WDropDown
-from zen_tui.screen import Screen
 from zen_tui.context import Context
 from zen_tui.defs import Color, Keys
 
@@ -55,7 +54,7 @@ def main_loop(m):
                 return res
 
 def main():
-    with Context():
+    with Context() as ctx:
         global d
         d = Dialog(10, 5, 40, 14)
         d.add(12, 1, WLabel("Press F9 for menu"))
@@ -71,8 +70,8 @@ def main():
         d.add(23, 11, b)
         b.finish_dialog = ACTION_CANCEL
 
-        screen_redraw(Screen)
-        Screen.set_screen_redraw(screen_redraw)
+        screen_redraw(ctx.screen)
+        ctx.screen.set_screen_redraw(screen_redraw)
 
         menu_file = WMenuBox([("Open...", "Open"), ("Save", "S"), ("Save as...", "Sa"), ("Exit", "ex")])
         menu_edit = WMenuBox([("Copy", "copy"), ("Paste", "paste")])

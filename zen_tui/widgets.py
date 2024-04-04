@@ -36,7 +36,7 @@ class Dialog(Widget):
     """Dialog Widget class."""
     finish_on_esc = True
 
-    def __init__(self, x, y, w=0, h=0, title=""):
+    def __init__(self, x: int, y: int, w: int=0, h: int=0, title=""):
         super().__init__()
         self.x = x
         self.y = y
@@ -52,7 +52,7 @@ class Dialog(Widget):
         self.focus_w = None
         self.focus_idx = -1
 
-    def add(self, x, y, widget):
+    def add(self, x: int, y: int, widget: str | Widget):
         if isinstance(widget, str):
             # Convert raw string to WLabel
             widget = WLabel(widget)
@@ -60,7 +60,7 @@ class Dialog(Widget):
         self.childs.append(widget)
         widget.owner = self
 
-    def autosize(self, extra_w=0, extra_h=0):
+    def autosize(self, extra_w: int=0, extra_h: int=0):
         w = 0
         h = 0
         for wid in self.childs:
@@ -78,7 +78,7 @@ class Dialog(Widget):
                 self.focus_w.focus = True
 
         # Redraw widgets with cursor off
-        self.cursor(onoff=False)
+        self.cursor(on=False)
         self.dialog_box(self.x, self.y, self.w, self.h, self.title)
         for w in self.childs:
             w.redraw()
@@ -300,7 +300,7 @@ class WRadioButton(ItemSelWidget):
 class WListBox(EditorExt, ChoiceWidget):
     """ WListBox Widget class."""
 
-    def __init__(self, w, h, items):
+    def __init__(self, w: int, h: int, items: list[str]):
         EditorExt.__init__(self)
         ChoiceWidget.__init__(self, 0)
         self.width = w
@@ -353,9 +353,9 @@ class WListBox(EditorExt, ChoiceWidget):
     def set_cursor(self) -> None:
         Widget.set_cursor(self)
 
-    def cursor(self, _onoff: bool) -> None:
+    def cursor(self, on: bool) -> None:
         # Force off
-        super().cursor(onoff=False)
+        super().cursor(on=False)
 
 
 class WPopupList(Dialog):
@@ -377,7 +377,7 @@ class WPopupList(Dialog):
                 # (Processed) mouse click finishes selection
                 return ACTION_OK
 
-    def __init__(self, x, y, w, h, items, sel_item=0) -> None:
+    def __init__(self, x: int, y: int, w: int, h: int, items: list[str], sel_item: int=0) -> None:
         super().__init__(x, y, w, h)
         self.list = self.OneShotList(w - 2, h - 2, items)
         self.list.cur_line = sel_item
@@ -400,7 +400,7 @@ class WPopupList(Dialog):
 class WDropDown(ChoiceWidget):
     """WDropDown Widget class."""
 
-    def __init__(self, w, items, *, dropdown_h=5):
+    def __init__(self, w: int, items: list[str], *, dropdown_h: int=5) -> None:
         super().__init__(0)
         self.items = items
         self.h = 1
@@ -434,7 +434,7 @@ class WDropDown(ChoiceWidget):
 class WTextEntry(EditorExt, EditableWidget):
     """WTextEntry Widget class."""
 
-    def __init__(self, w, text):
+    def __init__(self, w: int, text: str):
         super(EditorExt, self).__init__(self, width=w, height=1)
         # super(EditableWidget, self).__init__()
         self.t = text
@@ -499,7 +499,7 @@ class WPasswdEntry(WTextEntry):
 class WMultiEntry(EditorExt, EditableWidget):
     """WMultiEntry Widget class."""
 
-    def __init__(self, w, h, lines):
+    def __init__(self, w: int, h: int, lines: list[str]):
         super(EditorExt, self).__init__(self, width=w, height=h)
         # super(EditableWidget, self).__init__()
         self.h = h
@@ -572,7 +572,7 @@ class WComboBox(WTextEntry):
 class WCompletionList(WPopupList):
     """WCompletionList Widget class."""
 
-    def __init__(self, x, y, w, h, items):
+    def __init__(self, x: int, y: int, w: int, h: int, items: list[str]):
         super().__init__(x, y, w, h, items=[])
         self.list = self.OneShotList(w - 2, h - 2, items)
         self.add(1, 1, self.list)

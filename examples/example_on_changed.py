@@ -3,16 +3,20 @@
 # current state of widgets to other parts of an app (to other widgets
 # in this case).
 #
+
+import os
+import sys
+sys.path.append(os.path.realpath(os.path.join(os.path.dirname(__file__), "..")))
+
 from zen_tui.context import Context
-from zen_tui.screen import Screen
 from zen_tui.widgets import ACTION_OK, ACTION_CANCEL, Dialog, WButton, WCheckbox, WDropDown, WLabel, WListBox, WRadioButton
 from zen_tui.defs import Color
 
 
-with Context():
-    Screen.attr_color(Color.C_WHITE, Color.C_BLUE)
-    Screen.cls()
-    Screen.attr_reset()
+with Context() as ctx:
+    ctx.screen.attr_color(Color.C_WHITE, Color.C_BLUE)
+    ctx.screen.cls()
+    ctx.screen.attr_reset()
 
     d = Dialog(5, 5, 50, 12)
 

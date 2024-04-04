@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from .screen import Screen
 from .basewidget import ACTION_CANCEL, ACTION_PREV, ACTION_NEXT, Widget, ItemSelWidget
 from .defs import Color, Keys
 
@@ -14,14 +13,14 @@ class WMenuBar(ItemSelWidget):
         super().__init__(menu_struct)
         self.x = self.y = 0
         self.h = 1
-        self.w = Screen.screen_size()[0]
+        self.w = self.screen_size()[0]
         self.pulled_down = False
         self.focus = False
         self.permanent = False
 
     def redraw(self) -> None:
         if self.focus:
-            self.cursor(onoff=False)
+            self.cursor(on=False)
         self.goto(self.x, self.y)
         i = 0
         for name, _pulldown in self.items:

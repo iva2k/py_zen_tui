@@ -1,16 +1,15 @@
 """Example Widgets program."""
 
 from zen_tui.context import Context
-from zen_tui.screen import Screen
 from zen_tui.widgets import ACTION_OK, ACTION_CANCEL, Dialog, WAutoComplete, WButton, WCheckbox, WComboBox, WDropDown, WFrame, WLabel, WListBox, WMultiEntry, WPasswdEntry, WRadioButton, WTextEntry
 from zen_tui.defs import Color
 
 
-with Context():
+with Context() as ctx:
 
-    Screen.attr_color(Color.C_WHITE, Color.C_BLUE)
-    Screen.cls()
-    Screen.attr_reset()
+    ctx.screen.attr_color(Color.C_WHITE, Color.C_BLUE)
+    ctx.screen.cls()
+    ctx.screen.attr_reset()
     d = Dialog(5, 5, 50, 12)
 
     # Can add a raw string to dialog, will be converted to WLabel

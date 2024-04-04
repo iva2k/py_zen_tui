@@ -159,19 +159,19 @@ class EditorExt(Editor):
         return True
 
     def show_status(self, msg):
-        self.cursor(onoff=False)
+        self.cursor(on=False)
         self.goto(0, self.status_y)
         self.wr(msg)
         self.clear_to_eol()
         self.set_cursor()
-        self.cursor(onoff=True)
+        self.cursor(on=True)
 
     def show_cursor_status(self):
-        self.cursor(onoff=False)
+        self.cursor(on=False)
         self.goto(0, 31)
         self.wr("{self.cur_line: 3d}:{self.col + self.margin: 3d}")
         self.set_cursor()
-        self.cursor(onoff=True)
+        self.cursor(on=True)
 
     def dialog_edit_line(self, left=None, top=8, width=40, height=3, line="", title=""):
         if left is None:
